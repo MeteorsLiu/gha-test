@@ -7,6 +7,8 @@ on:
         required: true
       llvm:
         required: true
+
+jobs:
   llgo:
     runs-on: ${{ inputs.os }}
     name: Install LLGo
