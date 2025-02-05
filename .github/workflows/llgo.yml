@@ -69,5 +69,5 @@ jobs:
           go install ./cmd/gogensig
           go install .
       - name: Check LLCppg
-        run: | 
+        run: |
           llcppg -help
