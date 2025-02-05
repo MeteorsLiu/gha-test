@@ -34,9 +34,7 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
-      - name: Setup LLGO
-        id: setup-llgo
-        uses: ./.github/actions/llgo
+      - uses: ./.github/workflows/llgo.yml
         with:
           os: ${{ matrix.os }}
           llvm: ${{ matrix.llvm }}
