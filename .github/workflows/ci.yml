@@ -12,6 +12,19 @@ permissions:
   contents: read
 
 jobs:
+  install-llgo:
+    name: JavaScript Tests
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-24.04
+        llvm: [18]
+    runs-on: ${{matrix.os}}
+    uses: ./.github/workflows/llgo.yml
+    with:
+      os: ${{ matrix.os }}
+      llvm: ${{ matrix.llvm }}
   test-javascript:
     name: JavaScript Tests
     strategy:
@@ -33,11 +46,6 @@ jobs:
         with:
           node-version-file: .node-version
           cache: npm
-
-      - uses: ./.github/workflows/llgo.yml
-        with:
-          os: ${{ matrix.os }}
-          llvm: ${{ matrix.llvm }}
 
       - name: Install Dependencies
         id: npm-ci
