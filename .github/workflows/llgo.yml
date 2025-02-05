@@ -68,6 +68,3 @@ jobs:
           go install ./cmd/llcppcfg
           go install ./cmd/gogensig
           go install .
-      - name: Check LLCppg
-        run: |
-          llcppg -help

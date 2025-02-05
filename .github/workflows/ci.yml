@@ -46,10 +46,15 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
+      - name: Check LLCppg
+        run: |
+          llcppg -help
+
       - name: Test Local Action
         id: test-action
         uses: ./
         with:
+          ACTIONS_STEP_DEBUG: true
           milliseconds: 1000
 
       - name: Print Output
