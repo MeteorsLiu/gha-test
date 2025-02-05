@@ -1,31 +1,10 @@
 name: LLGO
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-
-jobs:
-  all:
-    strategy:
-      matrix:
-        os:
-          - macos-latest
-          - ubuntu-24.04
-        llvm: [18]
+  llgo:
     runs-on: ${{matrix.os}}
-    name: TypeScript Tests
+    name: Install LLGo
     steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
