@@ -36,7 +36,7 @@ jobs:
 
       - name: Setup LLGO
         id: setup-llgo
-        uses: ./.github/workflows/llgo.yml
+        uses: ./.github/actions/llgo
 
       - name: Install Dependencies
         id: npm-ci
