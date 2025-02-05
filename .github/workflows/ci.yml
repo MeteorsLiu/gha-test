@@ -12,19 +12,6 @@ permissions:
   contents: read
 
 jobs:
-  install-llgo:
-    name: JavaScript Tests
-    strategy:
-      matrix:
-        os:
-          - macos-latest
-          - ubuntu-24.04
-        llvm: [18]
-    runs-on: ${{matrix.os}}
-    uses: ./.github/workflows/llgo.yml
-    with:
-      os: ${{ matrix.os }}
-      llvm: ${{ matrix.llvm }}
   test-javascript:
     name: JavaScript Tests
     strategy:
@@ -40,6 +27,48 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'
+
+      - name: Install dependencies
+        if: startsWith(inputs.os, 'macos')
+        run: |
+          brew update
+          brew install llvm@${{ inputs.llvm }} bdw-gc openssl libffi
+          brew link --force libffi
+          echo "$(brew --prefix llvm@${{ inputs.llvm }})/bin" >> $GITHUB_PATH
+
+          # llcppg dependencies
+          brew install cjson
+
+      - name: Install dependencies
+        if: startsWith(inputs.os, 'ubuntu')
+        run: |
+          echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{ inputs.llvm }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y llvm-${{ inputs.llvm }}-dev clang-${{ inputs.llvm }} libunwind-dev libclang-${{ inputs.llvm }}-dev lld-${{ inputs.llvm }} pkg-config libgc-dev libssl-dev zlib1g-dev libffi-dev libcjson-dev
+          echo "/usr/lib/llvm-${{ inputs.llvm }}/bin" >> $GITHUB_PATH
+      - name: Install LLGO
+        run: |
+          git clone https://github.com/goplus/llgo.git
+          echo $PWD
+          cd llgo/compiler
+          go install -v ./cmd/...
+          export LLGO_ROOT=$GITHUB_WORKSPACE/llgo
+          echo "LLGO_ROOT=$LLGO_ROOT" >> $GITHUB_ENV
+      - name: Install LLCppg
+        run: |
+          git clone https://github.com/goplus/llcppg.git
+          echo $PWD
+          cd llcppg
+          llgo install ./_xtool/llcppsymg
+          llgo install ./_xtool/llcppsigfetch
+          go install ./cmd/llcppcfg
+          go install ./cmd/gogensig
+          go install .
       - name: Setup Node.js
         id: setup-node
         uses: actions/setup-node@v4
