@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
 
 permissions:
   contents: read
@@ -69,37 +66,54 @@ jobs:
           go install ./cmd/llcppcfg
           go install ./cmd/gogensig
           go install .
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: npm
-
-      - name: Install Dependencies
-        id: npm-ci
-        run: npm ci
-
-      - name: Lint
-        id: npm-lint
-        run: npm run lint
-
-      - name: Test
-        id: npm-ci-test
-        run: npm run ci-test
-
-      - name: Check LLCppg
-        run: |
-          llcppg -help
-
-      - name: Test Local Action
-        id: test-action
-        uses: ./
+      - uses: 8BitJonny/gh-get-current-pr@3.0.0
+        id: PR
+      - run: echo "PR ${prNumber} ${prTitle} at ${prUrl} is ${prJSON}"
+        if: steps.PR.outputs.pr_found == 'true'
         env:
-          ACTIONS_STEP_DEBUG: true
-        with:
-          sha: ${{ github.event.pull_request.head.sha }}
+          # JSON object with the full PR object
+          # toJSON(fromJSON(...pr)) parses it into memory and then format is with pretty-print.
+          prJSON: ${{ toJSON(fromJSON(steps.PR.outputs.pr)) }}
+          # Direct access to common PR properties
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
+          prTitle: ${{ steps.PR.outputs.pr_title }}
+          prBody: ${{ steps.PR.outputs.pr_body }}
+          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
+          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
+          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+          prLabel: ${{ steps.PR.outputs.pr_labels }}
+      # - name: Setup Node.js
+      #   id: setup-node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version-file: .node-version
+      #     cache: npm
 
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+      # - name: Install Dependencies
+      #   id: npm-ci
+      #   run: npm ci
+
+      # - name: Lint
+      #   id: npm-lint
+      #   run: npm run lint
+
+      # - name: Test
+      #   id: npm-ci-test
+      #   run: npm run ci-test
+
+      # - name: Check LLCppg
+      #   run: |
+      #     llcppg -help
+
+      # - name: Test Local Action
+      #   id: test-action
+      #   uses: ./
+      #   env:
+      #     ACTIONS_STEP_DEBUG: true
+      #   with:
+      #     sha: ${{ github.event.pull_request.head.sha }}
+
+      # - name: Print Output
+      #   id: output
+      #   run: echo "${{ steps.test-action.outputs.time }}"
