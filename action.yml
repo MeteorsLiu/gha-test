@@ -1,6 +1,6 @@
-name: The name of your action here
+name: Test LLPKG GHA
 description: Provide a description here
-author: Your name or organization here
+author: Rick Guo
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
@@ -9,10 +9,13 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
-    required: true
-    default: '1000'
+  github-token:
+    description: The GitHub token used to create an authenticated client.
+    required: false
+    default: ${{ github.token }}
+  sha:
+    description: Sha to get PR for. Defaults to current sha.
+    required: false
 
 # Define your outputs here.
 outputs:

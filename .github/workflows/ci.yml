@@ -98,7 +98,7 @@ jobs:
         env:
           ACTIONS_STEP_DEBUG: true
         with:
-          milliseconds: 1000
+          sha: ${{ github.event.pull_request.head.sha }}
 
       - name: Print Output
         id: output
