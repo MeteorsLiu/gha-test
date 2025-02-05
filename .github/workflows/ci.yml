@@ -95,8 +95,9 @@ jobs:
       - name: Test Local Action
         id: test-action
         uses: ./
-        with:
+        env:
           ACTIONS_STEP_DEBUG: true
+        with:
           milliseconds: 1000
 
       - name: Print Output
