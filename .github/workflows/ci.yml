@@ -12,9 +12,15 @@ permissions:
   contents: read
 
 jobs:
-  test-typescript:
-    name: TypeScript Tests
-    runs-on: ubuntu-latest
+  test-javascript:
+    name: JavaScript Tests
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-24.04
+        llvm: [18]
+    runs-on: ${{matrix.os}}
 
     steps:
       - name: Checkout
@@ -44,20 +50,11 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
       - name: Test Local Action
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
+          who-to-greet: GitHub
 
       - name: Print Output
         id: output
