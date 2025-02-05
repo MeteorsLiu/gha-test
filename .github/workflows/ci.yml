@@ -33,24 +33,24 @@ jobs:
           go-version: '1.23'
 
       - name: Install dependencies
-        if: startsWith(inputs.os, 'macos')
+        if: startsWith(matrix.os, 'macos')
         run: |
           brew update
-          brew install llvm@${{ inputs.llvm }} bdw-gc openssl libffi
+          brew install llvm@${{ matrix.llvm }} bdw-gc openssl libffi
           brew link --force libffi
-          echo "$(brew --prefix llvm@${{ inputs.llvm }})/bin" >> $GITHUB_PATH
+          echo "$(brew --prefix llvm@${{ matrix.llvm }})/bin" >> $GITHUB_PATH
 
           # llcppg dependencies
           brew install cjson
 
       - name: Install dependencies
-        if: startsWith(inputs.os, 'ubuntu')
+        if: startsWith(matrix.os, 'ubuntu')
         run: |
-          echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{ inputs.llvm }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{ matrix.llvm }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo apt-get update
-          sudo apt-get install -y llvm-${{ inputs.llvm }}-dev clang-${{ inputs.llvm }} libunwind-dev libclang-${{ inputs.llvm }}-dev lld-${{ inputs.llvm }} pkg-config libgc-dev libssl-dev zlib1g-dev libffi-dev libcjson-dev
-          echo "/usr/lib/llvm-${{ inputs.llvm }}/bin" >> $GITHUB_PATH
+          sudo apt-get install -y llvm-${{ matrix.llvm }}-dev clang-${{ matrix.llvm }} libunwind-dev libclang-${{ matrix.llvm }}-dev lld-${{ matrix.llvm }} pkg-config libgc-dev libssl-dev zlib1g-dev libffi-dev libcjson-dev
+          echo "/usr/lib/llvm-${{ matrix.llvm }}/bin" >> $GITHUB_PATH
       - name: Install LLGO
         run: |
           git clone https://github.com/goplus/llgo.git
