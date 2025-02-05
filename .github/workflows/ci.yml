@@ -37,6 +37,9 @@ jobs:
       - name: Setup LLGO
         id: setup-llgo
         uses: ./.github/actions/llgo
+        with:
+          os: ${{ matrix.os }}
+          llvm: ${{ matrix.llvm }}
 
       - name: Install Dependencies
         id: npm-ci

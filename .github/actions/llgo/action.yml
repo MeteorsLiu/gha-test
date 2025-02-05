@@ -1,8 +1,14 @@
 name: LLGO
 
 on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+      llvm:
+        required: true
   llgo:
-    runs-on: ${{matrix.os}}
+    runs-on: ${{os}}
     name: Install LLGo
     steps:
       - name: Set up Go
@@ -11,24 +17,24 @@ on:
           go-version: '1.23'
 
       - name: Install dependencies
-        if: startsWith(matrix.os, 'macos')
+        if: startsWith(os, 'macos')
         run: |
           brew update
-          brew install llvm@${{matrix.llvm}} bdw-gc openssl libffi
+          brew install llvm@${{llvm}} bdw-gc openssl libffi
           brew link --force libffi
-          echo "$(brew --prefix llvm@${{matrix.llvm}})/bin" >> $GITHUB_PATH
+          echo "$(brew --prefix llvm@${{llvm}})/bin" >> $GITHUB_PATH
 
           # llcppg dependencies
           brew install cjson
 
       - name: Install dependencies
-        if: startsWith(matrix.os, 'ubuntu')
+        if: startsWith(os, 'ubuntu')
         run: |
-          echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{matrix.llvm}} main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-${{llvm}} main" | sudo tee /etc/apt/sources.list.d/llvm.list
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo apt-get update
-          sudo apt-get install -y llvm-${{matrix.llvm}}-dev clang-${{matrix.llvm}} libunwind-dev libclang-${{matrix.llvm}}-dev lld-${{matrix.llvm}} pkg-config libgc-dev libssl-dev zlib1g-dev libffi-dev libcjson-dev
-          echo "/usr/lib/llvm-${{matrix.llvm}}/bin" >> $GITHUB_PATH
+          sudo apt-get install -y llvm-${{llvm}}-dev clang-${{llvm}} libunwind-dev libclang-${{llvm}}-dev lld-${{llvm}} pkg-config libgc-dev libssl-dev zlib1g-dev libffi-dev libcjson-dev
+          echo "/usr/lib/llvm-${{llvm}}/bin" >> $GITHUB_PATH
       - name: Install LLGO
         run: |
           git clone https://github.com/goplus/llgo.git
